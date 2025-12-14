@@ -1,5 +1,6 @@
 import express from "express"
 import { PrismaClient } from "@prisma/client"
+import { env } from "process"
 
 export const prisma = new PrismaClient()
 
@@ -16,3 +17,7 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`)
 })
+
+datasource: {
+  url: env("DATABASE_URL"),
+}
