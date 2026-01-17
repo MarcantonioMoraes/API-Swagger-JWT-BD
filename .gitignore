@@ -3,3 +3,4 @@
 /src/config/env.ts
 .env
 /src/generated/prisma
+/prisma

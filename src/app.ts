@@ -1,10 +1,22 @@
-import express from "express"
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import alunoRoutes from "./routes/aluno.routes";
+import authRoutes from "./routes/auth.routes";
 
-export const app = express()
 
-app.use(express.json())
+dotenv.config();
 
+const app = express();
 
-import { userRoutes } from "./routes/user.routes.js"
+app.use(cors());
+app.use(express.json());
+app.use("/alunos", alunoRoutes);
+app.use("/auth", authRoutes);
 
-app.use("/users", userRoutes)
+app.get("/", (req, res) => {
+  res.send("API Faculdade rodando 🚀");
+});
+
+export default app;
+
