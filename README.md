@@ -1,189 +1,252 @@
-    # API Express + TypeScript
+# 📚 API de Gestão de Alunos - Express + TypeScript
 
-    Este documento descreve todas as alterações e configurações necessárias para fazer a API Express com TypeScript funcionar com ES Modules.
+Uma API REST robusta para gerenciamento de alunos com autenticação JWT, documentação Swagger e integração com banco de dados PostgreSQL usando TypeORM.
 
-    ## 📋 Alterações Realizadas
+## ✨ Funcionalidades
 
-    ### 1. **Configuração de Módulos no `package.json`**
+- 🔐 **Autenticação JWT** - Login seguro com tokens JWT
+- 📋 **CRUD de Alunos** - Criar, ler, atualizar e deletar alunos
+- 📖 **Documentação Swagger** - API documentada automaticamente
+- 🗄️ **TypeORM** - ORM para TypeScript com suporte a PostgreSQL
+- 🔒 **Middleware de Autenticação** - Proteção de rotas
+- 🌐 **CORS Habilitado** - Suporte para requisições cross-origin
+- 📦 **TypeScript** - Tipagem estática e segurança de tipos
+- 🔄 **Hot Reload** - Desenvolvimento com recarregamento automático
 
-    Adicionada a propriedade `"type": "module"` para indicar ao Node.js que o projeto usa ES Modules (ES6):
+---
 
-    ```json
-    {
-    "name": "api-express-ts",
-    "version": "1.0.0",
-    "description": "",
-    "type": "module",
-    "main": "index.js",
-    ...
-    }
-    ```
+## 📋 Pré-requisitos
 
-    **Por quê?** Sem essa configuração, o Node.js tenta carregar os arquivos como CommonJS (módulos antigos), causando conflito com a sintaxe `import/export`.
+- Node.js 18.0 ou superior
+- npm ou yarn
+- PostgreSQL 12 ou superior
+- Git
 
-    ---
+---
 
-    ### 2. **Configuração do TypeScript no `tsconfig.json`**
+## 🚀 Como Usar
 
-    Foram alteradas as seguintes configurações no `compilerOptions`:
+    ### 1️⃣ Instalação
 
-    #### a) Módulo de Saída
-    ```json
-    "module": "esnext"
-    ```
-    - **Antes:** `"module": "commonjs"`
-    - **Motivo:** Necessário para gerar código compatível com ES Modules
+```bash
+npm install
+```
 
-    #### b) Resolução de Módulos
-    ```json
-    "moduleResolution": "bundler"
-    ```
-    - **Adicionado:** Nova propriedade para melhor suporte a módulos
-    - **Motivo:** Funciona melhor com Node.js ES modules
+### 2️⃣ Variáveis de Ambiente
 
-    #### c) Configuração do ts-node
-    ```json
-    "ts-node": {
-    "esm": true,
-    "experimentalEsm": true
-    }
-    ```
-    - **Adicionado:** Seção especial para `ts-node-dev`
-    - **Motivo:** Permite que o ts-node execute TypeScript com ES modules
+Crie um arquivo `.env` na raiz do projeto:
 
-    ---
+```env
+# Database
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/api_faculdade
 
-    ### 3. **Script de Desenvolvimento no `package.json`**
+# JWT
+JWT_SECRET=sua_chave_secreta_aqui
+JWT_EXPIRES_IN=24h
 
-    Atualizado o script `dev` para usar `tsx`:
+# Server
+PORT=3000
+NODE_ENV=development
+```
 
-    ```json
-    "scripts": {
-    "dev": "tsx --watch src/index.ts",
-    "start": "node dist/index.js"
-    }
-    ```
+### 3️⃣ Configurar Banco de Dados
 
-    - **Antes:** `"dev": "ts-node-dev src/index.ts"`
-    - **Novo:** `"dev": "tsx --watch src/index.ts"`
-    - **Motivo:** `tsx` é mais moderno, rápido e funciona melhor com ES modules no Windows
+```bash
+# Executar migrações (se houver)
+npx typeorm migration:run -d dist/database/data-source.js
 
-    ---
+# Sincronizar schema
+npx typeorm schema:sync -d dist/database/data-source.js
+```
 
-    ### 4. **Dependências Instaladas**
+### 4️⃣ Desenvolvimento (com hot reload)
 
-    #### Dependências de Produção
-    ```json
-    "dependencies": {
+```bash
+npm run dev
+```
+
+O servidor iniciará em `http://localhost:3000` e recarregará automaticamente quando você fizer alterações.
+
+### 5️⃣ Produção
+
+Compilar TypeScript:
+```bash
+npm run build
+```
+
+Iniciar servidor:
+```bash
+npm run start
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+api-express-ts/
+├── src/
+│   ├── app.ts                    # Configuração do Express
+│   ├── server.ts                 # Inicialização do servidor
+│   ├── config/
+│   │   └── swagger.ts            # Configuração do Swagger
+│   ├── controllers/
+│   │   ├── aluno.controller.ts   # Lógica de alunos
+│   │   └── auth.controller.ts    # Lógica de autenticação
+│   ├── database/
+│   │   └── data-source.ts        # Configuração TypeORM
+│   ├── entities/
+│   │   ├── Alunos.ts            # Modelo de Alunos
+│   │   └── User.ts              # Modelo de Usuário
+│   ├── middlewares/
+│   │   └── auth.middleware.ts    # Middleware de autenticação
+│   ├── routes/
+│   │   ├── aluno.routes.ts       # Rotas de alunos
+│   │   └── auth.routes.ts        # Rotas de autenticação
+│   └── @types/
+│       └── express/
+│           └── index.d.ts        # Type definitions customizadas
+├── dist/                         # Código compilado (gerado)
+├── .env                          # Variáveis de ambiente
+├── package.json                  # Dependências do projeto
+├── tsconfig.json                 # Configuração TypeScript
+└── README.md                      # Este arquivo
+```
+
+---
+
+## 🔌 Endpoints da API
+
+### Autenticação
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/auth/login` | Login de usuário |
+| `POST` | `/auth/register` | Registro de novo usuário |
+
+### Alunos
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| `GET` | `/alunos` | Listar todos os alunos | ✅ Requerida |
+| `GET` | `/alunos/:id` | Obter aluno por ID | ✅ Requerida |
+| `POST` | `/alunos` | Criar novo aluno | ✅ Requerida |
+| `PUT` | `/alunos/:id` | Atualizar aluno | ✅ Requerida |
+| `DELETE` | `/alunos/:id` | Deletar aluno | ✅ Requerida |
+
+### Documentação
+
+- **Swagger UI**: `GET /api-docs` - Documentação interativa da API
+
+---
+
+## 🔐 Autenticação JWT
+
+A API utiliza tokens JWT para autenticação. 
+
+### Fluxo de Autenticação
+
+1. Faça login em `/auth/login` com credenciais válidas
+2. Você receberá um token JWT
+3. Inclua o token no header de autorização:
+   ```
+   Authorization: Bearer <seu_token_jwt>
+   ```
+
+### Middleware de Autenticação
+
+Todas as rotas de alunos estão protegidas pelo middleware de autenticação. O token deve ser passado no header `Authorization`.
+
+---
+
+## 🏗️ Tecnologias Utilizadas
+
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Express.js** | Framework web |
+| **TypeScript** | Linguagem com tipagem estática |
+| **TypeORM** | ORM para banco de dados |
+| **PostgreSQL** | Banco de dados relacional |
+| **JWT (jsonwebtoken)** | Autenticação e autorização |
+| **bcryptjs** | Hashing de senhas |
+| **Swagger/OpenAPI** | Documentação da API |
+| **CORS** | Compartilhamento de recursos entre origens |
+
+---
+
+## 📦 Dependências Principais
+
+```json
+{
+  "dependencies": {
+    "@prisma/client": "^7.1.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.17.1",
+    "typeorm": "^0.3.28",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
-    }
-    ```
-
-    #### Dependências de Desenvolvimento
-    ```json
-    "devDependencies": {
+  },
+  "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
-    }
-    ```
+  }
+}
+```
 
-    **Novo:** `tsx` foi adicionado para substituir `ts-node-dev` como executor de TypeScript com ES modules.
+---
 
-    ---
+## 🔧 Scripts Disponíveis
 
-    ## 🚀 Como Usar
+```bash
+# Desenvolvimento com hot reload
+npm run dev
 
-    ### Instalação
-    ```powershell
-    npm install
-    ```
+# Watch mode com tsx
+npm run watch
 
-    ### Desenvolvimento (com hot reload)
-    ```powershell
-    npm run dev
-    ```
+# Compilação TypeScript
+npm run build
 
-    O servidor iniciará e recarregará automaticamente quando você fizer alterações no código.
+# Iniciar servidor em produção
+npm run start
+```
 
-    ### Produção
-    ```powershell
-    npm run start
-    ```
+---
 
-    Executa o arquivo compilado em `dist/index.js`.
+## 🚨 Troubleshooting
 
-    ---
+### Erro de Conexão com Banco de Dados
+- Verifique se PostgreSQL está rodando
+- Confirme a `DATABASE_URL` no arquivo `.env`
+- Verifique credenciais de banco de dados
 
-    ## 📁 Estrutura do Projeto
+### Token JWT Inválido
+- Token expirou: Faça login novamente
+- Token malformado: Verifique se está sendo enviado corretamente no header
+- Secret não coincide: Verifique `JWT_SECRET` no `.env`
 
-    ```
-    api-express-ts/
-    ├── src/
-    │   └── index.ts          # Arquivo principal da API
-    ├── dist/                 # Pasta gerada (código compilado)
-    ├── package.json          # Configuração npm (com "type": "module")
-    ├── tsconfig.json         # Configuração TypeScript (com ES modules)
-    └── README.md             # Este arquivo
-    ```
+### Porta já em uso
+- Mude a porta no arquivo `.env`
+- Ou finalize o processo usando a porta: `lsof -i :3000`
 
-    ---
+---
 
-    ## ⚙️ Configurações Críticas
+## 👤 Autor
 
-    ### `package.json`
-    - ✅ `"type": "module"` - Obrigatório para ES modules
-    - ✅ Script `dev` usa `tsx --watch` - Funciona melhor no Windows
-    - ✅ Script `start` usa `node dist/index.js` - Para produção
+**Marcantonio Moraes**
 
-    ### `tsconfig.json`
-    - ✅ `"module": "esnext"` - Gera código ES6 moderno
-    - ✅ `"moduleResolution": "bundler"` - Melhor suporte a módulos
-    - ✅ `"ts-node": { "esm": true }` - Suporte para execução direta
-    - ✅ `"target": "es2020"` - Compatibilidade com Node.js moderno
+---
 
-    ---
+## 📄 Licença
 
-    ## 🔧 Erros Comuns e Soluções
+Este projeto está sob a licença ISC.
 
-    ### Erro: "Must use import to load ES Module"
-    - **Causa:** `package.json` sem `"type": "module"`
-    - **Solução:** Adicione `"type": "module"` ao `package.json`
+---
 
-    ### Erro: "Importações ECMAScript não podem ser gravadas em CommonJS"
-    - **Causa:** `tsconfig.json` com `"module": "commonjs"`
-    - **Solução:** Altere para `"module": "esnext"`
-
-    ### Erro: "NODE_OPTIONS não é reconhecido" (no Windows PowerShell)
-    - **Causa:** Sintaxe errada para variáveis de ambiente
-    - **Solução:** Use `tsx` em vez de `ts-node-dev`
-
-    ---
-
-    ## 📝 Resumo das Alterações
-
-    | Arquivo | Alteração | Motivo |
-    |---------|-----------|--------|
-    | `package.json` | Adicionado `"type": "module"` | Habilitar ES modules |
-    | `tsconfig.json` | `"module": "commonjs"` → `"esnext"` | Gerar código ES6 |
-    | `tsconfig.json` | Adicionado `"moduleResolution": "bundler"` | Melhor suporte |
-    | `tsconfig.json` | Adicionada seção `"ts-node"` | Suporte para execução |
-    | `package.json` | Script alterado para `tsx --watch` | Compatibilidade Windows |
-    | `package.json` | Adicionado `tsx` como devDependency | Executor moderno |
-
-    ---
-
-    ## ✅ Status Atual
-
-    ✅ API pronta para desenvolvimento com TypeScript e ES modules
-    ✅ Hot reload funcionando com `npm run dev`
-    ✅ Compilação TypeScript configurada
-    ✅ Swagger e Swagger UI prontos para uso
-
-    ---
-
-    **Data de Configuração:** 14 de dezembro de 2025
+**Última atualização:** 17 de janeiro de 2026
