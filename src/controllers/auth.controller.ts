@@ -7,6 +7,41 @@ import jwt from "jsonwebtoken";
 const userRepository = AppDataSource.getRepository(User);
 
 export class AuthController {
+  
+  /**
+   * @openapi
+   * /auth/register:
+   *   post:
+   *     tags:
+   *       - Autenticação
+   *     summary: Cadastro de usuário
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - nome
+   *               - email
+   *               - senha
+   *             properties:
+   *               nome:
+   *                 type: string
+   *                 example: João Silva
+   *               email:
+   *                 type: string
+   *                 example: joao@email.com
+   *               senha:
+   *                 type: string
+   *                 example: 123456
+   *     responses:
+   *       201:
+   *         description: Usuário criado com sucesso
+   *       400:
+   *         description: Email já existente
+   */
+
   static async register(req: Request, res: Response) {
     const { nome, email, senha } = req.body;
 
@@ -30,6 +65,35 @@ export class AuthController {
     });
   }
 
+  /**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - Autenticação
+ *     summary: Login do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - senha
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               senha:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Retorna token JWT
+ *       401:
+ *         description: Credenciais inválidas
+ */
   static async login(req: Request, res: Response) {
     const { email, senha } = req.body;
 
